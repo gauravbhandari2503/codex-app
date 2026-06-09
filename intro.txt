@@ -1,0 +1,6 @@
+config file in codex
+Speed - Increase speed without sacrificing intelligence
+Migrate to codex - https://developers.openai.com/codex/migrate
+
+rules - they are not similar to claude rules, they are very different
+

@@ -1,0 +1,24 @@
+# Basic Configuration
+
+model = "gpt-5.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "cached"  # default; serves results from the web search cache - other options (live, disabled)
+model_reasoning_effort = "high"
+personality = "friendly" # or "pragmatic" or "none"
+service_tier = "fast"
+
+[features]
+fast_mode = true
+
+[tui.keymap.global]
+open_transcript = "ctrl-t"
+
+[tui.keymap.composer]
+submit = ["enter", "ctrl-m"]
+
+[tui.keymap.chat]
+interrupt_turn = "f12"
+
+# Advance Configuration
+# Check this URL: https://developers.openai.com/codex/config-advanced
