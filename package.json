@@ -1,0 +1,23 @@
+{
+  "name": "codex-example",
+  "version": "1.0.0",
+  "description": "Vanilla JS Todo app with local storage and trending news sidebar",
+  "scripts": {
+    "start": "http-server src -p 3300 -o --cors",
+    "dev": "http-server src -p 3300 -o --cors -c-1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gauravbhandari2503/codex-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gauravbhandari2503/codex-app/issues"
+  },
+  "homepage": "https://github.com/gauravbhandari2503/codex-app#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

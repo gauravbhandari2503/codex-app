@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <main class="main-content">
+        <header class="app-header">
+          <h1>My Todo List</h1>
+        </header>
+
+        <section class="todo-input-section">
+          <form id="todo-form" class="todo-form">
+            <input
+              type="text"
+              id="todo-input"
+              class="todo-input"
+              placeholder="Add a new task..."
+              autocomplete="off"
+              required
+            />
+            <button type="submit" class="btn btn-primary">Add</button>
+          </form>
+        </section>
+
+        <section class="todo-list-section">
+          <div class="todo-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+          </div>
+
+          <ul id="todo-list" class="todo-list" aria-label="Todo items"></ul>
+
+          <footer class="todo-footer">
+            <span id="todo-count" class="todo-count"></span>
+            <button id="clear-completed" class="btn btn-ghost">Clear Completed</button>
+          </footer>
+        </section>
+      </main>
+
+      <aside class="sidebar">
+        <header class="sidebar-header">
+          <h2>Trending News</h2>
+        </header>
+        <div id="news-list" class="news-list" aria-label="News articles"></div>
+      </aside>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

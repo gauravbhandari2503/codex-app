@@ -1,0 +1,23 @@
+prefix_rule(
+    pattern = ["git", "branch"],
+    decision = "forbidden",
+    justification = "Viewing branches is not allowed",
+    match = [
+        "git branch",
+        "git branch -a",
+        "git branch --list",
+    ],
+    not_match = [
+        "git checkout main",
+        "git switch main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "status"],
+    decision = "forbidden",
+    justification = "Viewing status is not allowed",
+    match = [
+        "git status",
+    ]
+)
