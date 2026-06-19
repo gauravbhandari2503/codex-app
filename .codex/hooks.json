@@ -2,22 +2,12 @@
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit",
+        "matcher": "apply_patch",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.codex/hooks/smart-commit/git-workflow-smart-commit-posttooluse-posttooluse-1-1.sh\"",
+            "command": "/home/gaurav/Documents/Projects/codex-example/.codex/hooks/smart-commit/git-workflow-smart-commit-posttooluse-posttooluse-1-1.sh",
             "statusMessage": "Creating smart commit for edited file"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.codex/hooks/smart-commit/git-workflow-smart-commit-posttooluse-posttooluse-2-1.sh\"",
-            "statusMessage": "Creating smart commit for new file"
           }
         ]
       }

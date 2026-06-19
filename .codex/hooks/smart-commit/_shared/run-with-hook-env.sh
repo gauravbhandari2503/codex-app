@@ -16,7 +16,40 @@ export CODEX_HOOK_INPUT_JSON="$input"
 
 json_get() {
   local expr="$1"
-  jq -r "$expr" <<<"$input" 2>/dev/null || true
+  if command -v jq >/dev/null 2>&1; then
+    jq -r "$expr" <<<"$input" 2>/dev/null || true
+    return
+  fi
+
+  CODEX_JSON_EXPR="$expr" node -e '
+    const fs = require("fs");
+    const input = fs.readFileSync(0, "utf8");
+    const expr = process.env.CODEX_JSON_EXPR || "";
+
+    let data;
+    try {
+      data = JSON.parse(input || "{}");
+    } catch {
+      process.exit(0);
+    }
+
+    const match = expr.match(/^\.([A-Za-z0-9_.]+)(?:\s*\/\/\s*empty)?$/);
+    if (!match) process.exit(0);
+
+    const value = match[1].split(".").reduce((current, key) => {
+      if (current && Object.prototype.hasOwnProperty.call(current, key)) {
+        return current[key];
+      }
+      return undefined;
+    }, data);
+
+    if (value === undefined || value === null) process.exit(0);
+    if (typeof value === "object") {
+      process.stdout.write(JSON.stringify(value));
+    } else {
+      process.stdout.write(String(value));
+    }
+  ' <<<"$input" 2>/dev/null || true
 }
 
 export CODEX_SESSION_ID="$(json_get '.session_id // empty')"
@@ -67,16 +100,54 @@ if [[ "$CODEX_HOOK_EVENT_NAME" == "PreToolUse" ]]; then
   export CODEX_TOOL_FILE_PATH="$(json_get '.tool_input.file_path // empty')"
 else
   if [[ -n "$tool_input_raw" && "$tool_input_raw" != "null" ]]; then
-    tool_input_type="$(jq -r '.tool_input | type? // empty' <<<"$input" 2>/dev/null || true)"
+    if command -v jq >/dev/null 2>&1; then
+      tool_input_type="$(jq -r '.tool_input | type? // empty' <<<"$input" 2>/dev/null || true)"
+    else
+      tool_input_type="$(CODEX_JSON_EXPR='.tool_input' node -e '
+        const fs = require("fs");
+        const input = fs.readFileSync(0, "utf8");
+        try {
+          const value = JSON.parse(input || "{}").tool_input;
+          if (Array.isArray(value)) console.log("array");
+          else if (value && typeof value === "object") console.log("object");
+          else if (typeof value === "string") console.log("string");
+        } catch {}
+      ' <<<"$input" 2>/dev/null || true)"
+    fi
     if [[ "$tool_input_type" == "object" || "$tool_input_type" == "array" ]]; then
       tool_input_json="$tool_input_raw"
     else
-      tool_input_json="$(jq -r 'try fromjson catch empty' <<<"$tool_input_raw" 2>/dev/null || true)"
+      if command -v jq >/dev/null 2>&1; then
+        tool_input_json="$(jq -r 'try fromjson catch empty' <<<"$tool_input_raw" 2>/dev/null || true)"
+      else
+        tool_input_json="$(node -e '
+          const fs = require("fs");
+          const input = fs.readFileSync(0, "utf8");
+          try {
+            const value = JSON.parse(input);
+            process.stdout.write(JSON.stringify(value));
+          } catch {}
+        ' <<<"$tool_input_raw" 2>/dev/null || true)"
+      fi
     fi
     if [[ -n "$tool_input_json" ]]; then
       export CODEX_TOOL_INPUT_JSON="$tool_input_json"
-      export CODEX_TOOL_FILE_PATH="$(jq -r 'try (.file_path // .path // .destination // .params.file_path // .params.path // empty) catch ""' <<<"$tool_input_json" 2>/dev/null || true)"
-      export CODEX_TOOL_COMMAND="$(jq -r 'try (.command // (.params.command | join(" ")) // empty) catch ""' <<<"$tool_input_json" 2>/dev/null || true)"
+      if command -v jq >/dev/null 2>&1; then
+        export CODEX_TOOL_FILE_PATH="$(jq -r 'try (.file_path // .path // .destination // .params.file_path // .params.path // empty) catch ""' <<<"$tool_input_json" 2>/dev/null || true)"
+        export CODEX_TOOL_COMMAND="$(jq -r 'try (.command // (.params.command | join(" ")) // empty) catch ""' <<<"$tool_input_json" 2>/dev/null || true)"
+      else
+        export CODEX_TOOL_FILE_PATH="$(node -e '
+          const fs = require("fs");
+          const value = JSON.parse(fs.readFileSync(0, "utf8") || "{}");
+          process.stdout.write(value.file_path || value.path || value.destination || value.params?.file_path || value.params?.path || "");
+        ' <<<"$tool_input_json" 2>/dev/null || true)"
+        export CODEX_TOOL_COMMAND="$(node -e '
+          const fs = require("fs");
+          const value = JSON.parse(fs.readFileSync(0, "utf8") || "{}");
+          const command = value.command || (Array.isArray(value.params?.command) ? value.params.command.join(" ") : "");
+          process.stdout.write(command);
+        ' <<<"$tool_input_json" 2>/dev/null || true)"
+      fi
     elif [[ "$CODEX_TOOL_NAME" == "apply_patch" ]]; then
       export CODEX_TOOL_COMMAND="$tool_input_raw"
     fi
