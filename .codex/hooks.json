@@ -1,13 +1,14 @@
 {
   "hooks": {
-    "PostToolUse": [
+    "PreToolUse": [
       {
-        "matcher": "apply_patch",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "/home/gaurav/Documents/Projects/codex-example/.codex/hooks/smart-commit/git-workflow-smart-commit-posttooluse-posttooluse-1-1.sh",
-            "statusMessage": "Creating smart commit for edited file"
+            "command": ".codex/hooks/block-rm-rf/block-rm-rf.sh",
+            "statusMessage": "Checking command safety...",
+            "timeout": 10
           }
         ]
       }

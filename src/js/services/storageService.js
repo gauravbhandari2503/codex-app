@@ -1,5 +1,10 @@
 const STORAGE_KEY = 'todos';
 
+/**
+ * Reads and parses the stored todos.
+ *
+ * @returns {Array} The stored todos, or an empty array if none exist or parsing fails.
+ */
 function readStore() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -8,6 +13,12 @@ function readStore() {
   }
 }
 
+/**
+ * Serializes and saves the provided todos to local storage.
+ *
+ * @param {Array} todos - The todos to persist.
+ * @returns {void}
+ */
 function writeStore(todos) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
 }
