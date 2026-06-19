@@ -1,8 +1,6 @@
 # Basic Configuration
 
 model = "gpt-5.5"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
 web_search = "cached"  # default; serves results from the web search cache - other options (live, disabled)
 model_reasoning_effort = "low"
 personality = "friendly" # or "pragmatic" or "none"
